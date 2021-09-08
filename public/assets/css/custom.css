@@ -1,0 +1,32 @@
+/* your styles go here */
+
+#navbarSupportedContent{
+    justify-content: flex-start;
+}
+
+.logo{
+    width: 100px;
+    height:auto;
+}
+.flex-1{
+    flex:1
+}
+
+a,span,p,h1,h2,h3,h4,h5,label,.btn,input{
+    font-family: 'Tajawal', sans-serif !important;
+}
+.pointer{
+    cursor: pointer;
+}
+
+.product-image{
+    display:none !important;
+}
+
+.active{
+    display:block !important;
+}
+
+.error{
+    color:red;
+}
