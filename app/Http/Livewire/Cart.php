@@ -27,7 +27,7 @@ class Cart extends Component
     {
     
         
-            app(ModelsCart::class)->addProduct($cartProduct);
+          $cart =   app(ModelsCart::class)->addProduct($cartProduct);
         
         $this->updateCartCount();
 

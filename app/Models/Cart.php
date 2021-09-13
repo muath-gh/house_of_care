@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class Cart
@@ -10,8 +12,21 @@ class Cart
 
     public function getCart()
     {
-        // Session::remove('cart');
-        return  Session::get('cart') ? Session::get('cart') : [];
+
+        //   Session::remove('cart');
+        $dbCart = DBCart::where('ip_address', request()->ip())->first();
+        $cart = [];
+        if ($dbCart) {
+            $items = json_decode($dbCart->items);
+            foreach($items as $item)
+            {
+$cart[] = (array) $item;
+            }
+           
+        } else if (Session::get("cart")) {
+            $cart = Session::get("cart");
+        }
+        return $cart;
     }
 
     public function getCartCount(): int
@@ -24,28 +39,32 @@ class Cart
     public function addProduct($cartProduct)
     {
 
-        
-        $cart = Session::get("cart") ?  Session::get("cart") : [];
+        $cart = $this->getCart();
         $id = $this->searchForId($cartProduct["productId"], $cart);
-       
+
 
 
 
 
         if ($id) {
-            $cart = $this->updateQuantity($id,$cartProduct['quantity'], $cart);
+            $cart = $this->updateQuantity($id, $cartProduct['quantity'], $cart);
         } else {
             array_push($cart, $cartProduct);
         }
         Session::put("cart", $cart);
-        
-        
+
+        DBCart::updateOrCreate(["ip_address" => request()->ip()], [
+            "items" => json_encode($cart)
+        ]);
+
+        return $cart;
     }
 
     public function emptyCart(): void
     {
         $cart = [];
-        session('card')->put($cart);
+        DBCart::where('ip_address',request()->ip())->delete();
+        Session::put('cart', $cart);
     }
 
     function searchForId($id, $array)
@@ -58,11 +77,11 @@ class Cart
         return null;
     }
 
-    function updateQuantity($id,$quantity, &$array)
+    function updateQuantity($id, $quantity, &$array)
     {
         foreach ($array as  &$val) {
             if ($val['productId'] === $id) {
-                
+
                 $val['quantity'] = ((int)$val['quantity']) + ((int)$quantity);
             }
         }

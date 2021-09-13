@@ -4,6 +4,8 @@ namespace App\Http\Controllers\FrontEnd;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -37,6 +39,23 @@ class SiteController extends Controller
             "address.required"=>"هذا الحقل مطلوب"
         ]);
 
+        $cartItems = app(Cart::class)->getCart();
+
+        $order = Order::create([
+            "customer_name"=>$request->first_name . " ".$request->last_name,
+            "customer_phone"=>$request->phone,
+            "customer_address"=>$request->address
+        ]);
+
+        foreach($cartItems as $cartItem){
+            OrderProduct::create([
+                "order_id"=>$order->id,
+                "product_id"=>$cartItem['productId'],
+                "quantity"=>$cartItem['quantity']
+            ]);
+        }
+        app(Cart::class)->emptyCart();
+        return redirect()->back();
     }
 
     public function checkOut(){
