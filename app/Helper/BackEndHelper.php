@@ -8,7 +8,7 @@ class BackEndHelper {
                 foreach (explode(',', $_SERVER[$key]) as $ip){
                     $ip = trim($ip); // just to be safe
                     if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
-                        dd($ip);
+                   
                         return $ip;
                     }
                 }
