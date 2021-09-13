@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helper\BackEndHelper;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -14,7 +15,7 @@ class Cart
     {
 
         //   Session::remove('cart');
-        $dbCart = DBCart::where('ip_address', request()->ip())->first();
+        $dbCart = DBCart::where('ip_address', BackEndHelper::getIp())->first();
         $cart = [];
         if ($dbCart) {
             $items = json_decode($dbCart->items);
@@ -53,7 +54,7 @@ $cart[] = (array) $item;
         }
         Session::put("cart", $cart);
 
-        DBCart::updateOrCreate(["ip_address" => request()->ip()], [
+        DBCart::updateOrCreate(["ip_address" => BackEndHelper::getIp()], [
             "items" => json_encode($cart)
         ]);
 
@@ -63,7 +64,7 @@ $cart[] = (array) $item;
     public function emptyCart(): void
     {
         $cart = [];
-        DBCart::where('ip_address',request()->ip())->delete();
+        DBCart::where('ip_address',BackEndHelper::getIp())->delete();
         Session::put('cart', $cart);
     }
 
